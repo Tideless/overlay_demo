@@ -1,0 +1,58 @@
+---
+- name: Setups a NAT server
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure ufw is installed
+      ansible.builtin.apt:
+        name: ufw
+        state: present
+
+    - name: Ensure IP forwarding is enabled ufw
+      ansible.builtin.lineinfile:
+        path: /etc/default/ufw
+        regexp: '^DEFAULT_FORWARD_POLICY="DROP"'
+        line: DEFAULT_FORWARD_POLICY="ACCEPT"
+      notify: Reload firewall
+
+    - name: Ensure IP forwarding is enabled in the kernel
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        regexp: '^.*net.ipv4.ip_forward='
+        line: net.ipv4.ip_forward=1
+      notify: Reload sysctl
+
+    - name: Ensure ufw is enabled
+      community.general.ufw:
+        state: enabled
+        rule: allow
+        name: OpenSSH
+      notify: Reload firewall
+
+    - name: Ensure the /etc/ufw/before.rules contains the NAT configuration
+      ansible.builtin.blockinfile:
+        path: /etc/ufw/before.rules
+        insertbefore: "^# Don't delete these required lines"
+        block: |
+          # NAT table rules
+          *nat
+          :POSTROUTING ACCEPT [0:0]
+
+          # Forward traffic from eth1 to eth0
+          -A POSTROUTING -s {{ lan_network }} -o {{ wan_interface }} -j MASQUERADE
+
+          # End NAT table rules
+          COMMIT
+      notify: Reload firewall
+
+  handlers:
+    - name: Reload sysctl
+      ansible.builtin.command:
+        cmd: sysctl -p
+      register: output
+      changed_when: output.rc != 0
+
+    - name: Reload firewall
+      community.general.ufw:
+        state: reloaded

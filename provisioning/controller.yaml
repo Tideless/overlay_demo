@@ -1,0 +1,59 @@
+---
+- name: Setup a Headscale controller
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure Headscale is installed
+      ansible.builtin.apt:
+        deb: "https://github.com/juanfont/headscale/releases/download/v{{ headscale_version }}\
+          /headscale_{{ headscale_version }}_linux_{{ headscale_architecture }}.deb"
+        state: present
+
+    - name: Check if sqlite database file is present
+      ansible.builtin.stat:
+        path: '{{ headscale_sqlite_db_path }}'
+      register: s
+
+    - name: Ensure that the sqlite database file exist
+      ansible.builtin.file:
+        path: '/var/lib/headscale/db.sqlite'
+        state: touch
+        mode: '0600'
+        owner: root
+        group: root
+      when: not s.stat.exists
+
+    - name: Ensure Headscale service is started and enabled
+      ansible.builtin.service:
+        name: headscale
+        state: started
+        enabled: true
+
+    - name: Make sure Headscale is configured
+      ansible.builtin.lineinfile:
+        path: /etc/headscale/config.yaml
+        regexp: '{{ item.regex }}'
+        line: '{{ item.line }}'
+      loop:
+        - {regex: '^server_url', line: 'server_url: http://{{ headscale_listen_address }}:{{ headscale_listen_port }}'}
+        - {regex: '^listen_addr', line: 'listen_addr: {{ headscale_listen_address }}:{{ headscale_listen_port }}'}
+      notify: Restart Headscale
+
+    - name: Get all headscale users
+      ansible.builtin.command:
+        cmd: headscale users list --output json
+      register: res
+      changed_when: false
+
+    - name: Create headscale users
+      ansible.builtin.command:
+        cmd: 'headscale users create {{ item }}'
+      loop: '{{ headscale_users }}'
+      when: item not in res.stdout
+
+  handlers:
+    - name: Restart Headscale
+      ansible.builtin.service:
+        name: headscale
+        state: restarted

@@ -1,0 +1,37 @@
+---
+- name: Setups a node as a tailscale client
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure that that Tailscale repo GPG key exists
+      ansible.builtin.apt_key:
+        url: https://pkgs.tailscale.com/stable/ubuntu/jammy.noarmor.gpg
+        keyring: /usr/share/keyrings/tailscale-archive-keyring.gpg
+
+    - name: Ensure that that Tailscale repo is configured
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] \
+          https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
+        state: present
+
+    - name: Ensure that tailscale is installed
+      ansible.builtin.apt:
+        name: tailscale
+        state: present
+
+    - name: Ensure network traffic to the common network is routed through the NAT server
+      ansible.builtin.template:
+        dest: /etc/netplan/60-routes-ansible.yaml
+        src: 60-routes-ansible.yaml.j2
+        mode: "0644"
+        owner: root
+        group: root
+      notify: Apply netplan
+
+  handlers:
+    - name: Apply netplan
+      ansible.builtin.command:
+        cmd: netplan apply
+      register: my_output
+      changed_when: my_output.rc == 0

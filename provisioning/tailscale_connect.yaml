@@ -1,0 +1,29 @@
+---
+- name: Setups a node as a tailscale client
+  hosts: all
+  become: true
+
+  vars:
+    tailscale_loginserver: 'http://172.16.1.100:8080'
+
+  tasks:
+    - name: Check if node is a registrated tailscale node
+      ansible.builtin.command:
+        cmd: tailscale status
+      failed_when: false
+      changed_when: false
+      register: n
+
+    - name: Connect user to tailscale network
+      when: n.rc != 0 or tailscale_user not in n.stdout
+      block:
+        - name: Generate a preauth key on the controller host
+          ansible.builtin.command:
+            cmd: 'headscale preauthkeys create --user {{ tailscale_user }}'
+          register: k
+          delegate_to: controller
+          changed_when: false
+
+        - name: Connect the node to the tailscale network
+          ansible.builtin.command:
+            cmd: 'tailscale up --login-server {{ tailscale_loginserver }} --authkey {{ k.stdout }}'
