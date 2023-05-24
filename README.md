@@ -5,7 +5,7 @@ It uses Vagrant to create a system consisting of nodes, each behind a NAT server
 
 ### Network layout
 
-![Class Diagram](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/Tideless/overlay_demo/Tideless-patch-1/diagrams/network.puml)
+![Class Diagram](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/Tideless/overlay_demo/master/diagrams/network.puml)
 
 ## Prerequisites
 
