@@ -1,0 +1,41 @@
+@startuml
+nwdiag {
+  group {
+    color = "#CCFFCC"
+    node_a
+    nat_a
+  }
+  group {
+    color = "#CCFFCC"
+    node_b
+    nat_b
+  }
+
+  network net_a {
+      address = "192.168.1.0/24"
+
+      node_a [address = "192.168.1.2"];
+      nat_a [address = "192.168.1.1"]
+  }
+  network net_b {
+      address = "192.168.1.0/24"
+
+      node_b [address = "192.168.1.2"];
+      nat_b [address = "192.168.1.1"]
+  }
+  network common {
+      color = "SkyBlue"
+      address = "172.16.1.x/24";
+
+      nat_a [address = "172.16.1.1"]
+      nat_b [address = "172.16.1.2"]
+      controller [address = "172.16.1.100"];
+  }
+  network overlay {
+    color = IndianRed
+    address = "100.64.x.x/16"
+    node_a [address = "100.64.0.1"]
+    node_b [address = "100.64.0.2"]
+  }
+}
+@enduml
