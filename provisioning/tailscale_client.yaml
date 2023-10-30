@@ -1,4 +1,5 @@
 ---
+# @startyaml
 - name: Setups a node as a tailscale client
   hosts: all
   become: true
@@ -29,9 +30,22 @@
         group: root
       notify: Apply netplan
 
+    - name: Ensure the SSH server allows password based authentication
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication yes'
+      notify: Restart the SSH server
+
   handlers:
     - name: Apply netplan
       ansible.builtin.command:
         cmd: netplan apply
       register: my_output
       changed_when: my_output.rc == 0
+
+    - name: Restart the SSH server
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+# @endyaml

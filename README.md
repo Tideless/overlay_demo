@@ -11,3 +11,9 @@ It uses Vagrant to create a system consisting of nodes, each behind a NAT server
 
 - [Vagrant](http://vagrantup.com)
 - [Vagrant-hosts](https://github.com/oscar-stack/vagrant-hosts)
+
+## Playbooks
+
+### tailscale_client.yaml
+
+![Class Diagram](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/Tideless/overlay_demo/master/tailscale_client.yaml)
