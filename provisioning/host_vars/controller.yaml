@@ -1,5 +1,6 @@
 ---
-headscale_version: '0.22.3'
+# @startyaml
+headscale_version: '0.23.0-alpha1'
 headscale_architecture: 'amd64'
 # headscale_server_url: 'controller'
 headscale_listen_address: '172.16.1.100'
@@ -9,3 +10,4 @@ headscale_sqlite_db_path: '/var/lib/headscale/db.sqlite'
 headscale_users:
   - user-a
   - user-b
+# @endyaml

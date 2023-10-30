@@ -1,3 +1,4 @@
+@startyaml
 ---
 - name: Setup a Headscale controller
   hosts: all
@@ -57,3 +58,5 @@
       ansible.builtin.service:
         name: headscale
         state: restarted
+...
+@endyaml

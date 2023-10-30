@@ -1,2 +1,4 @@
 ---
+# @startyaml
 tailscale_user: user-b
+# @endyaml
