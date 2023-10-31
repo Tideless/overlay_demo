@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
       hosts.add_host '100.64.0.2', ['node-b']
     end
     ctrl.vm.provision :ansible do |ansible|
+      ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/controller.yaml"
       # ansible.verbose = "v"
     end
@@ -35,6 +36,7 @@ end
       hosts.add_host '100.64.0.2', ['node-b']
     end
     nat.vm.provision :ansible do |ansible|
+      ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/nat_server.yaml"
     end
   end
@@ -48,9 +50,11 @@ end
       hosts.add_host '100.64.0.2', ['node-b']
     end
     node.vm.provision :ansible do |ansible|
+      ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/tailscale_client.yaml"
     end
     node.vm.provision :ansible do |ansible|
+      ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/tailscale_connect.yaml"
     end
   end
@@ -65,6 +69,7 @@ end
       hosts.add_host '100.64.0.2', ['node-b']
     end
     nat.vm.provision :ansible do |ansible|
+      ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/nat_server.yaml"
     end
   end
@@ -78,9 +83,11 @@ end
       hosts.add_host '100.64.0.2', ['node-b']
     end
     node.vm.provision :ansible do |ansible|
+      ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/tailscale_client.yaml"
     end
     node.vm.provision :ansible do |ansible|
+      ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/tailscale_connect.yaml"
     end
   end
