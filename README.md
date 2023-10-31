@@ -33,7 +33,3 @@ It uses Vagrant to create a system consisting of nodes, each behind a NAT server
 
 ![Class Diagram](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/Tideless/overlay_demo/master/provisioning/host_vars/node-b.yaml)
 
-### Playbooks
-### tailscale_client.yaml
-
-![Class Diagram](https://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/Tideless/overlay_demo/master/provisioning/tailscale_client.yaml)

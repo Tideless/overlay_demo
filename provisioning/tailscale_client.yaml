@@ -5,47 +5,46 @@
   become: true
 
   tasks:
-    - name: Ensure that that Tailscale repo GPG key exists
-      ansible.builtin.apt_key:
-        url: https://pkgs.tailscale.com/stable/ubuntu/jammy.noarmor.gpg
-        keyring: /usr/share/keyrings/tailscale-archive-keyring.gpg
+  - name: Ensure that that Tailscale repo GPG key exists
+    ansible.builtin.apt_key:
+      url: https://pkgs.tailscale.com/stable/ubuntu/jammy.noarmor.gpg
+      keyring: /usr/share/keyrings/tailscale-archive-keyring.gpg
 
-    - name: Ensure that that Tailscale repo is configured
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] \
-          https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
-        state: present
+  - name: Ensure that that Tailscale repo is configured
+    ansible.builtin.apt_repository:
+      repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] \
+        https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
+      state: present
 
-    - name: Ensure that tailscale is installed
-      ansible.builtin.apt:
-        name: tailscale
-        state: present
+  - name: Ensure that tailscale is installed
+    ansible.builtin.apt:
+      name: tailscale
+      state: present
 
-    - name: Ensure network traffic to the common network is routed through the NAT server
-      ansible.builtin.template:
-        dest: /etc/netplan/60-routes-ansible.yaml
-        src: 60-routes-ansible.yaml.j2
-        mode: "0644"
-        owner: root
-        group: root
-      notify: Apply netplan
+  - name: Ensure network traffic to the common network is routed through the NAT server
+    ansible.builtin.template:
+      dest: /etc/netplan/60-routes-ansible.yaml
+      src: 60-routes-ansible.yaml.j2
+      mode: "0644"
+      owner: root
+      group: root
+    notify: Apply netplan
 
-    - name: Ensure the SSH server allows password based authentication
-      ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^PasswordAuthentication'
-        line: 'PasswordAuthentication yes'
-      notify: Restart the SSH server
+  - name: Ensure the SSH server allows password based authentication
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^PasswordAuthentication'
+      line: 'PasswordAuthentication yes'
+    notify: Restart the SSH server
 
   handlers:
-    - name: Apply netplan
-      ansible.builtin.command:
-        cmd: netplan apply
-      register: my_output
-      changed_when: my_output.rc == 0
+  - name: Apply netplan
+    ansible.builtin.command:
+      cmd: netplan apply
+    register: my_output
+    changed_when: my_output.rc == 0
 
-    - name: Restart the SSH server
-      ansible.builtin.service:
-        name: sshd
-        state: restarted
-# @endyaml
+  - name: Restart the SSH server
+    ansible.builtin.service:
+      name: sshd
+      state: restarted
