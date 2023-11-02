@@ -1,5 +1,5 @@
 ---
-- name: Setups a NAT server
+- name: Sets up a NAT server
   hosts: all
   become: true
 

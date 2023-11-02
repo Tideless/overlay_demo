@@ -1,6 +1,6 @@
 ---
 # @startyaml
-- name: Setups a node as a tailscale client
+- name: Sets up a node as a tailscale client
   hosts: all
   become: true
 
